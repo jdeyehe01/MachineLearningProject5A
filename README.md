@@ -1,4 +1,4 @@
-# Projet Machine Learning#
+# Projet Machine Learning
 
 **Contexte**
 L'objectif du projet est de développer une librairie C++, utiliser Mathematica et plugger le tout sur Unity 3D.
