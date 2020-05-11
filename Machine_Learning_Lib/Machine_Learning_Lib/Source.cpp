@@ -16,16 +16,36 @@ extern "C"
 		return x * y;
 	}
 
+	DLLEXPORT double* linear_model_create()
+	{
+		// TODO crée un tableau de valeurs au hasar entre 0 et 1 et on renvoie un pointeur vers ce tableau
+		return 0;
+	}
+
 	DLLEXPORT double linear_model_predict_regression(double *model,
 		double *inputs, int inputs_size)
 	{
 		// TODO
-		return 0.0;
+		// on peut pas faire de .length ou .size pour savoir jusqu'ou itére
+		//return 0.0;
+
+		double result = 0.0;
+
+		for (size_t i = 1; i < inputs_size; i++)
+		{
+			result += model[i] * inputs[i - 1];
+		}
+
+		result += model[0];
+
+
+		return result;
 	}
 
 	DLLEXPORT double linear_model_predict_classification(double *model,
 		double *inputs, int inputs_size)
 	{
+		// Meme chose que la regression mais avec un fonction signe
 		return linear_model_predict_regression(model, inputs, inputs_size) >= 0 ?
 			1.0 : -1.0;
 	}
