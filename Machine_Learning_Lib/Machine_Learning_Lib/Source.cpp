@@ -5,31 +5,22 @@
 #endif
 
 #include  <cstdlib>
+#include <Eigen/Dense>
+#include <stdlib.h>
 
 extern "C"
 {
-	DLLEXPORT int my_add(int x, int y)
+	DLLEXPORT double* linear_model_create(int dim_size)
 	{
-		return x + y + 2;
-	}
+		auto tab = new double[dim_size + 1];
 
-	DLLEXPORT int my_mul(int x, int y)
-	{
-		return x * y;
-	}
-
-	DLLEXPORT double* linear_create_modele(int input_dim) {
-		// TODO crée un tableau de valeurs au hasar entre 0 et 1 et on renvoie un pointeur vers ce tableau
-		/*
-		static double r[10];
-		for (int i = 0; i < input_dim; i++) {
-			r[i] = rand() % 1;
+		for (auto i = 0; i < dim_size + 1; i++)
+		{
+			tab[i] = ((double)rand() / (double)RAND_MAX);
 		}
 
-		return r;
-		*/
+		return tab;
 	}
-
 
 	DLLEXPORT double linear_model_predict_regression(double *model,double *inputs, int inputs_size)
 	{
@@ -73,7 +64,7 @@ extern "C"
 		// TODO : Train Rosenblatt
 	}
 
-	DLLEXPORT void linear_model_train_regression(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs, int outputs_size/*,
+	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs, int outputs_size/*,
 		int interations_count, float alpha*/)
 	{
 		// TODO : Train PseudoInverse moore penrose
@@ -81,6 +72,6 @@ extern "C"
 
 	DLLEXPORT void linear_model_delete(double *model)
 	{
-		// TODO : Delete XXXX ?
+		delete(model);
 	}
 }
