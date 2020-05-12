@@ -4,7 +4,7 @@
 #define DLLEXPORT
 #endif
 
-#include  <cstdlib>
+#include <cstdlib>
 #include <Eigen/Dense>
 #include <stdlib.h>
 
@@ -72,6 +72,6 @@ extern "C"
 
 	DLLEXPORT void linear_model_delete(double *model)
 	{
-		delete(model);
+		delete[] model;
 	}
 }
