@@ -89,4 +89,19 @@ extern "C"
 	{
 		delete[] model;
 	}
+
+	struct MLP {
+		int* npl;
+		int npl_size;
+		double*** w;
+		double** x;
+		double** deltas;
+	};
+
+	// mlp_model_create([2, 3, 4, 1], 4);
+	DLLEXPORT struct MLP* mlp_model_create(int* npl, int npl_size)
+	{
+		// TODO
+		return 0;
+	}
 }
