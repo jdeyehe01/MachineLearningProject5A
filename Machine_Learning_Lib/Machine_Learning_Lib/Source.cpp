@@ -24,21 +24,18 @@ extern "C"
 
 	DLLEXPORT double linear_model_predict_regression(double *model,double *inputs, int inputs_size)
 	{
-		// TODO
-		// on peut pas faire de .length ou .size pour savoir jusqu'ou it�re
-		//return 0.0;
+		// model W => { x0, x1, x2 }
+		// inputs X => { x1, x2 }
+		// W[0] + W[1] * X[1] + W[2] * X[2]
 
-		double result = 0.0;
+		double* temp = &model[1];
 
-		for (size_t i = 1; i < inputs_size; i++)
-		{
-			result += model[i] * inputs[i - 1];
-		}
+		Eigen::Vector2d m_models(temp);
+		Eigen::Vector2d m_inputs(inputs);
 
-		result += model[0];
+		double result = m_models.dot(m_inputs);
 
-
-		return result;
+		return result + model[0];
 	}
 
 	DLLEXPORT double linear_model_predict_classification(double *model,double *inputs, int inputs_size)
@@ -56,7 +53,7 @@ extern "C"
 			int indexRand = rand() %  sizeof(dataset_inputs);
 			double g_x_k = linear_model_predict_classification(model, &dataset_inputs[indexRand] , inputs_size);
 			double grad = alpha * (dataset_expected_outputs[indexRand] - g_x_k);
-			model[0] += grad * 1
+			model[0] += grad * 1;
 			for (int k = 0; k < dataset_inputs[indexRand]; k++) {
 				model[k + 1] += grad * dataset_expected_outputs[indexRand,k];
 			}

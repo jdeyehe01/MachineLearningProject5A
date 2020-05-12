@@ -5,10 +5,11 @@
 #endif
 
 #include <iostream>
+#include <Eigen/Dense>
 #include <vector>
 
 extern "C" {
-	DLLEXPORT double* linear_model_create();
+	DLLEXPORT double* linear_model_create(int dim_size);
 	DLLEXPORT double linear_model_predict_regression(double* model, double* inputs, int inputs_size);
 }
 
