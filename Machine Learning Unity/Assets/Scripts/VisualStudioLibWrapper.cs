@@ -3,7 +3,7 @@
 public static class VisualStudioLibWrapper
 {
     [DllImport("Machine_Learning_Lib")]
-    public static extern double[] linear_model_create(int dim_size);
+    public static extern System.IntPtr linear_model_create(int dim_size);
 
     [DllImport("Machine_Learning_Lib")]
     public static extern double linear_model_predict_regression(double[] model, double[] inputs, int inputs_size);

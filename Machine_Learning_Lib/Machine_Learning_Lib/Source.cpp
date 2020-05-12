@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <Eigen/Dense>
 #include <stdlib.h>
+#include <iostream>
 
 using namespace Eigen;
 
@@ -31,21 +32,18 @@ extern "C"
 		// inputs X => { x1, x2 }
 		// W[0] + W[1] * X[1] + W[2] * X[2]
 
-		double* temp = &model[1];
-
-		Eigen::Vector2d m_models(temp);
-		Eigen::Vector2d m_inputs(inputs);
-
-		double result = m_models.dot(m_inputs);
-
+		double result = 0.0;
+		for (size_t i = 1; i < inputs_size + 1; i++)
+		{
+			result += model[i] * inputs[i - 1];
+		}
 		return result + model[0];
 	}
 
 	DLLEXPORT double linear_model_predict_classification(double *model,double *inputs, int inputs_size)
 	{
 		// Meme chose que la regression mais avec un fonction signe
-		return linear_model_predict_regression(model, inputs, inputs_size) >= 0 ?
-			1.0 : -1.0;
+		return linear_model_predict_regression(model, inputs, inputs_size) >= 0 ? 1.0 : -1.0;
 	}
 
 	DLLEXPORT void linear_model_train_classification(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs, int outputs_size,
@@ -53,14 +51,14 @@ extern "C"
 	{
 		for (int i = 0; i < interations_count; i++) {
 
-			int indexRand = rand() %  sizeof(dataset_inputs);
-			double g_x_k = linear_model_predict_classification(model, &dataset_inputs[indexRand] , inputs_size);
+			int indexRand = rand() % dataset_length;
+			int pos = indexRand * inputs_size;
+			double g_x_k = linear_model_predict_classification(model, &dataset_inputs[pos] , inputs_size);
 			double grad = alpha * (dataset_expected_outputs[indexRand] - g_x_k);
 			model[0] += grad * 1;
-			for (int k = 0; k < dataset_inputs[indexRand]; k++) {
-				model[k + 1] += grad * dataset_expected_outputs[indexRand,k];
+			for (int k = 0; k < inputs_size; k++) {
+				model[k + 1] += grad * dataset_inputs[pos+k];
 			}
-
 		}
 	}
 
@@ -71,17 +69,17 @@ extern "C"
 		MatrixXd y(dataset_length, 1);
 
 		for (int i = 0; i < dataset_length; i++) {
-			y(i,0) = dataset_expected_outputs[i];
-			x(i, 0) = i;
+			y(i, 0) = dataset_expected_outputs[i];
+			x(i, 0) = 1;
 
-			for (int k = 0; k < inputs_size + 1; k++) {
-				x(i, k) = dataset_inputs[i * inputs_size * (k-1)];
+			for (int k = 1; k < (inputs_size + 1); k++) {
+				x(i, k) = dataset_inputs[i * inputs_size + (k-1)];
 			}
+		}
 
-			MatrixXd result = ((x.transpose() * x).inverse() * x.transpose()) * y;
-			for (int j = 0; j < inputs_size + 1; j++) {
-				model[j] = result(j, 0);
-			}
+		MatrixXd result = ((x.transpose() * x).inverse() * x.transpose()) * y;
+		for (int j = 0; j < inputs_size + 1; j++) {
+			model[j] = result(j, 0);
 		}
 	}
 
