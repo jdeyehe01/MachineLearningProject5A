@@ -11,13 +11,18 @@ public class TestVisualStudioScript : MonoBehaviour
     public Transform[] trainSpheresTransforms;
     public Transform[] testSpheresTransforms;
 
+
+
+
     // Start is called before the first frame update
     void Start()
-    {
+    {/*
         Debug.Log("With Visual Studio DLL : ");
         double[] model = CreateModel(2);
 
-        Predict(model);
+        Train(model);
+
+      Predict(model);*/
     }
 
     // Update is called once per frame
@@ -67,8 +72,50 @@ public class TestVisualStudioScript : MonoBehaviour
 
     }
 
-    void Train()
+    void Train(double[] model)
     {
         Debug.Log("Train Model");
+        List<double> inputs = new List<double>();
+        List<double> expecteds = new List<double>();
+
+        foreach (var trainSpheresTransform in trainSpheresTransforms)
+        {
+            inputs.Add(trainSpheresTransform.position.x);
+            inputs.Add(trainSpheresTransform.position.z);
+
+            expecteds.Add(trainSpheresTransform.position.y);
+
+        }
+
+            VisualStudioLibWrapper.linear_model_train_regression(model, inputs.ToArray() , inputs.Count() , 2 , expecteds.ToArray());
+
+
+    }
+
+
+    void Delete(double[] model)
+    {
+        Debug.Log("Delete Model");
+        VisualStudioLibWrapper.linear_model_delete(model);
+    }
+
+
+
+    public void TrainAndTest()
+    {
+        Debug.Log("Training and Testing");
+
+
+        // Create Model
+
+        double[] model = CreateModel(2);
+
+        // Train Model
+        Train(model);
+
+        Predict(model);
+
+        //Delete
+        //Delete(model);
     }
 }

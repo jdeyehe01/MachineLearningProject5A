@@ -62,7 +62,7 @@ extern "C"
 		}
 	}
 
-	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs, int outputs_size)
+	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs)
 	{
 		// TODO : Train PseudoInverse moore penrose
 		MatrixXd x(dataset_length, inputs_size + 1);
@@ -85,7 +85,7 @@ extern "C"
 
 	DLLEXPORT void linear_model_delete(double *model)
 	{
-		delete[] model;
+		delete model;
 	}
 
 	struct MLP {
