@@ -51,17 +51,17 @@ extern "C"
 	DLLEXPORT void linear_model_train_classification(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs, int outputs_size,
 		int interations_count, float alpha)
 	{
-		for (int i = 0; i <= interations_count; i++) {
+		for (int i = 0; i < interations_count; i++) {
 
 			int indexRand = rand() %  sizeof(dataset_inputs);
 			double g_x_k = linear_model_predict_classification(model, &dataset_inputs[indexRand] , inputs_size);
-
-			for (int k = 0; k <= dataset_inputs[indexRand]; k++) {
-				model[indexRand + 1] += alpha * (dataset_expected_outputs[indexRand]);
+			double grad = alpha * (dataset_expected_outputs[indexRand] - g_x_k);
+			model[0] += grad * 1
+			for (int k = 0; k < dataset_inputs[indexRand]; k++) {
+				model[k + 1] += grad * dataset_expected_outputs[indexRand,k];
 			}
 
 		}
-		// TODO : Train Rosenblatt
 	}
 
 	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs, int outputs_size/*,
