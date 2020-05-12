@@ -8,6 +8,9 @@
 #include <Eigen/Dense>
 #include <stdlib.h>
 
+using namespace Eigen;
+
+
 extern "C"
 {
 	DLLEXPORT double* linear_model_create(int dim_size)
@@ -46,7 +49,7 @@ extern "C"
 	}
 
 	DLLEXPORT void linear_model_train_classification(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs, int outputs_size,
-		int interations_count, float alpha)
+		int interations_count,double alpha)
 	{
 		for (int i = 0; i < interations_count; i++) {
 
@@ -61,10 +64,25 @@ extern "C"
 		}
 	}
 
-	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs, int outputs_size/*,
-		int interations_count, float alpha*/)
+	DLLEXPORT void linear_model_train_regression(double *model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs, int outputs_size)
 	{
 		// TODO : Train PseudoInverse moore penrose
+		MatrixXd x(dataset_length, inputs_size + 1);
+		MatrixXd y(dataset_length, 1);
+
+		for (int i = 0; i < dataset_length; i++) {
+			y(i,0) = dataset_expected_outputs[i];
+			x(i, 0) = i;
+
+			for (int k = 0; k < inputs_size + 1; k++) {
+				x(i, k) = dataset_inputs[i * inputs_size * (k-1)];
+			}
+
+			MatrixXd result = ((x.transpose() * x).inverse() * x.transpose()) * y;
+			for (int j = 0; j < inputs_size + 1; j++) {
+				model[j] = result(j, 0);
+			}
+		}
 	}
 
 	DLLEXPORT void linear_model_delete(double *model)
