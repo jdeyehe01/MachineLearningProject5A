@@ -6,23 +6,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public class TestVisualStudioScript : MonoBehaviour
+public class TestScript : MonoBehaviour
 {
     public Transform[] trainSpheresTransforms;
     public Transform[] testSpheresTransforms;
 
-
-
-
     // Start is called before the first frame update
     void Start()
-    {/*
-        Debug.Log("With Visual Studio DLL : ");
-        double[] model = CreateModel(2);
+    {
 
-        Train(model);
-
-      Predict(model);*/
     }
 
     // Update is called once per frame
@@ -42,25 +34,24 @@ public class TestVisualStudioScript : MonoBehaviour
         return model;
     }
 
-    void Predict(double[] model)
+    void RegressionPredict(double[] model)
     {
         Debug.Log("Predict Model");
-        //List<double> input_array = new List<double>();
 
        foreach(var testSpheresTransform in testSpheresTransforms)
         {
-            //input_array.Add(testSpheresTransform.position.x);
-            //input_array.Add(testSpheresTransform.position.z);
             double [] inputs = new double[2];
             inputs[0] = testSpheresTransform.position.x;
             inputs[1] = testSpheresTransform.position.z;
 
             double result = VisualStudioLibWrapper.linear_model_predict_regression(model, inputs, inputs.Length);
+
             testSpheresTransform.position = new Vector3(
                 testSpheresTransform.position.x,
                 (float) result,
                 testSpheresTransform.position.z
-                );
+            );
+
             Debug.Log("Result Predict Model =  " + result);
         }
 
@@ -69,10 +60,9 @@ public class TestVisualStudioScript : MonoBehaviour
        // Debug.Log("Taille tableau d'inputs  " + inputs.Length);
         //double result = VisualStudioLibWrapper.linear_model_predict_regression(model, inputs, inputs.Length);
         //Debug.Log("Result Predict Model =  " + result);
-
     }
 
-    void Train(double[] model)
+    void RegressionTrain(double[] model)
     {
         Debug.Log("Train Model");
         List<double> inputs = new List<double>();
@@ -87,9 +77,47 @@ public class TestVisualStudioScript : MonoBehaviour
 
         }
 
-            VisualStudioLibWrapper.linear_model_train_regression(model, inputs.ToArray() , inputs.Count() , 2 , expecteds.ToArray());
+        VisualStudioLibWrapper.linear_model_train_regression(model, inputs.ToArray() , inputs.Count() , 2 , expecteds.ToArray());
+    }
 
+    void ClassificationPredict(double[] model)
+    {
+        Debug.Log("Predict Model");
 
+        foreach (var testSpheresTransform in testSpheresTransforms)
+        {
+            double[] inputs = new double[2];
+            inputs[0] = testSpheresTransform.position.x;
+            inputs[1] = testSpheresTransform.position.z;
+
+            double result = VisualStudioLibWrapper.linear_model_predict_classification(model, inputs, inputs.Length);
+
+            testSpheresTransform.position = new Vector3(
+                testSpheresTransform.position.x,
+                (float)result,
+                testSpheresTransform.position.z
+            );
+
+            Debug.Log("Result Predict Model =  " + result);
+        }
+    }
+
+    void ClassificationTrain(double[] model)
+    {
+        Debug.Log("Train Model");
+        List<double> inputs = new List<double>();
+        List<double> expecteds = new List<double>();
+
+        foreach (var trainSpheresTransform in trainSpheresTransforms)
+        {
+            inputs.Add(trainSpheresTransform.position.x);
+            inputs.Add(trainSpheresTransform.position.z);
+
+            expecteds.Add(trainSpheresTransform.position.y);
+
+        }
+
+        VisualStudioLibWrapper.linear_model_train_classification(model, inputs.ToArray(), inputs.Count(), 2, expecteds.ToArray(), 1000000, 0.01);
     }
 
 
@@ -101,19 +129,33 @@ public class TestVisualStudioScript : MonoBehaviour
 
 
 
-    public void TrainAndTest()
+    public void LaunchRegression()
     {
-        Debug.Log("Training and Testing");
-
+        Debug.Log("Regression : Training and Testing");
 
         // Create Model
-
         double[] model = CreateModel(2);
 
         // Train Model
-        Train(model);
+        RegressionTrain(model);
 
-        Predict(model);
+        RegressionPredict(model);
+
+        //Delete
+        //Delete(model);
+    }
+
+    public void LaunchClassification()
+    {
+        Debug.Log("Classification : Training and Testing");
+
+        // Create Model
+        double[] model = CreateModel(2);
+
+        // Train Model
+        ClassificationTrain(model);
+
+        ClassificationPredict(model);
 
         //Delete
         //Delete(model);

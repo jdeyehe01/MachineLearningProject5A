@@ -13,7 +13,7 @@ public static class VisualStudioLibWrapper
 
     [DllImport("Machine_Learning_Lib")]
     public static extern void linear_model_train_classification(double[] model, double[] dataset_inputs, int dataset_length, int inputs_size,
-        double[] dataset_expected_outputs, int outputs_size, int interations_count, double alpha);
+        double[] dataset_expected_outputs, int interations_count, double alpha);
 
     [DllImport("Machine_Learning_Lib")]
     public static extern void linear_model_train_regression(double[] model, double[] dataset_inputs, int dataset_length, int inputs_size, double[] dataset_expected_outputs);

@@ -46,7 +46,7 @@ extern "C"
 		return linear_model_predict_regression(model, inputs, inputs_size) >= 0 ? 1.0 : -1.0;
 	}
 
-	DLLEXPORT void linear_model_train_classification(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs, int outputs_size,
+	DLLEXPORT void linear_model_train_classification(double *model,double* dataset_inputs, int dataset_length, int inputs_size,double* dataset_expected_outputs,
 		int interations_count,double alpha)
 	{
 		for (int i = 0; i < interations_count; i++) {
