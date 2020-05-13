@@ -11,6 +11,9 @@ public class TestScript : MonoBehaviour
     public Transform[] trainSpheresTransforms;
     public Transform[] testSpheresTransforms;
 
+    public double alpha = 0.001;
+    public int iterationCount = 1000000;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,18 +26,18 @@ public class TestScript : MonoBehaviour
         
     }
 
-    double[] CreateModel(int size)
+    System.IntPtr CreateModel(int size)
     {
         Debug.Log("Create Model");
         var modelPtr = VisualStudioLibWrapper.linear_model_create(size);
-        double[] model = new double[size+1];
+        /*double[] model = new double[size+1];
         Marshal.Copy(modelPtr, model, 0, size + 1);
-        Debug.Log(model[size]);
+        Debug.Log(model[size]);*/
 
-        return model;
+        return modelPtr;
     }
 
-    void RegressionPredict(double[] model)
+    void RegressionPredict(IntPtr model)
     {
         Debug.Log("Predict Model");
 
@@ -62,7 +65,7 @@ public class TestScript : MonoBehaviour
         //Debug.Log("Result Predict Model =  " + result);
     }
 
-    void RegressionTrain(double[] model)
+    void RegressionTrain(IntPtr model)
     {
         Debug.Log("Train Model");
         List<double> inputs = new List<double>();
@@ -77,10 +80,10 @@ public class TestScript : MonoBehaviour
 
         }
 
-        VisualStudioLibWrapper.linear_model_train_regression(model, inputs.ToArray() , inputs.Count() , 2 , expecteds.ToArray());
+        VisualStudioLibWrapper.linear_model_train_regression(model, inputs.ToArray() , inputs.Count() / 2, 2 , expecteds.ToArray());
     }
 
-    void ClassificationPredict(double[] model)
+    void ClassificationPredict(IntPtr model)
     {
         Debug.Log("Predict Model");
 
@@ -102,7 +105,7 @@ public class TestScript : MonoBehaviour
         }
     }
 
-    void ClassificationTrain(double[] model)
+    void ClassificationTrain(IntPtr model)
     {
         Debug.Log("Train Model");
         List<double> inputs = new List<double>();
@@ -113,20 +116,18 @@ public class TestScript : MonoBehaviour
             inputs.Add(trainSpheresTransform.position.x);
             inputs.Add(trainSpheresTransform.position.z);
 
-            expecteds.Add(trainSpheresTransform.position.y);
-
+            expecteds.Add(trainSpheresTransform.position.y >= 0 ? 1.0 : -1.0 );
         }
 
-        VisualStudioLibWrapper.linear_model_train_classification(model, inputs.ToArray(), inputs.Count(), 2, expecteds.ToArray(), 1000000, 0.01);
+        VisualStudioLibWrapper.linear_model_train_classification(model, inputs.ToArray(), inputs.Count() / 2, 2, expecteds.ToArray(), iterationCount, alpha);
     }
 
 
-    void Delete(double[] model)
+    void Delete(IntPtr model)
     {
         Debug.Log("Delete Model");
         VisualStudioLibWrapper.linear_model_delete(model);
     }
-
 
 
     public void LaunchRegression()
@@ -134,7 +135,7 @@ public class TestScript : MonoBehaviour
         Debug.Log("Regression : Training and Testing");
 
         // Create Model
-        double[] model = CreateModel(2);
+        var model = CreateModel(2);
 
         // Train Model
         RegressionTrain(model);
@@ -142,7 +143,7 @@ public class TestScript : MonoBehaviour
         RegressionPredict(model);
 
         //Delete
-        //Delete(model);
+        Delete(model);
     }
 
     public void LaunchClassification()
@@ -150,7 +151,7 @@ public class TestScript : MonoBehaviour
         Debug.Log("Classification : Training and Testing");
 
         // Create Model
-        double[] model = CreateModel(2);
+        var model = CreateModel(2);
 
         // Train Model
         ClassificationTrain(model);
@@ -158,6 +159,6 @@ public class TestScript : MonoBehaviour
         ClassificationPredict(model);
 
         //Delete
-        //Delete(model);
+        Delete(model);
     }
 }
