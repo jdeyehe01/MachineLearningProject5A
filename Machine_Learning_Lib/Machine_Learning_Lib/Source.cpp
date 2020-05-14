@@ -28,7 +28,6 @@ extern "C"
 	};
 
 	void mlp_propagation(MLP* model, double* inputs, bool regression) {
-
 		for (auto j = 1; j < model->npl[0] + 1; j++) {
 			model->x[0][j] = inputs[j - 1];
 		}
@@ -38,7 +37,7 @@ extern "C"
 
 				auto sum = 0.0;
 
-				for (auto i = 0; i < model->npl[l - 1] + 1; i++) {
+				for (auto i = 1; i < model->npl[l - 1] + 1; i++) {
 					sum += model->w[l][i][j] * model->x[l - 1][i];
 				}
 
@@ -49,8 +48,8 @@ extern "C"
 
 
 	double* mlp_propagation_and_extract_result(MLP* model, double* inputs, bool regression) {
-		mlp_propagation(model, inputs, false);
-		auto result = new double[model->npl[model->npl_size]];
+		mlp_propagation(model, inputs, regression);
+		auto result = new double[model->npl[model->npl_size - 1]];
 
 		for (auto j = 1; j < model->npl[model->npl_size - 1] + 1; j++) {
 
@@ -157,7 +156,7 @@ extern "C"
 
 			model->w[l] = new double* [npl[l - 1] + 1];
 
-			for (auto i = 1; i < npl[l - 1] + 1; i++) {
+			for (auto i = 0; i < npl[l - 1] + 1; i++) {
 
 				model->w[l][i] = new double[npl[l] + 1];
 
@@ -224,11 +223,11 @@ extern "C"
 				}
 			}
 
-			for (auto l = 1; l < model->npl_size; l++) 
+			for (auto l = 1; l < model->npl_size; l++)
 			{
-				for (auto i = 0; i < model->npl[l] + 1; i++) 
+				for (auto i = 1; i < model->npl[l] + 1; i++)
 				{
-					for (auto j = 1; j < model->npl[l] + 1; j++) 
+					for (auto j = 1; j < model->npl[l] + 1; j++)
 					{
 						model->w[l][i][j] -= alpha * model->x[l - 1][i] * model->deltas[l][j];
 					}
@@ -236,6 +235,7 @@ extern "C"
 			}
 
 		}
+		
 	}
 
 

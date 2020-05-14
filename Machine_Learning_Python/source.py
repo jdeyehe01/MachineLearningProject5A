@@ -49,7 +49,7 @@ if __name__ == "__main__":
     path_to_dll = "./Machine_Learning_Lib.dll"
     cpp_lib = CDLL(path_to_dll)
 
-    print(cpp_lib.test_sum(5, 4))
+    #print(cpp_lib.test_sum(5, 4))
 
     cpp_lib.linear_model_create.argtypes = [ctypes.c_int]
     cpp_lib.linear_model_create.restype = ctypes.c_void_p
@@ -73,47 +73,47 @@ if __name__ == "__main__":
         predicted_values[i] = cpp_lib.linear_model_predict_regression(model, (ctypes.c_double * 1)(*[inputs[i]]), 1)
 
     plt.scatter(inputs, predicted_values)
-    plt.show()
+    #plt.show()
 
     (x_train, y_train), (x_test, y_test) = load_iris_dataset()
 
-    epochs = 100
+    epochs = 500
     alpha = 0.01
 
     # Test Keras Model
-    model = keras.models.Sequential()
-    model.add(keras.layers.Dense(16, activation=keras.activations.tanh))
-    model.add(keras.layers.Dense(3, activation=keras.activations.tanh))
-    model.compile(keras.optimizers.SGD(alpha), loss=keras.losses.mean_squared_error)
-
-    start_time = time.time()
-
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=1, verbose=0)
-
-    print(f'It took {time.time() - start_time} seconds to train in Keras')
-
-    good_classified_on_train = 0
-    for k in range(len(x_train)):
-        if np.argmax(model.predict(np.array([x_train[k]]))) == np.argmax(y_train[k]):
-            good_classified_on_train += 1
-
-    good_classified_on_test = 0
-    for k in range(len(x_test)):
-        if np.argmax(model.predict(np.array([x_test[k]]))) == np.argmax(y_test[k]):
-            good_classified_on_test += 1
-
-    print(f"Keras Accuracy on train : {good_classified_on_train / len(x_train) * 100}%")
-    print(f"Keras Accuracy on test : {good_classified_on_test / len(x_test) * 100}%")
-
-    predicted_values_on_test = model.predict(x_test)
-    predicted_values_on_test = np.argmax(predicted_values_on_test, axis=1)
-
-    expected_values_on_test = np.argmax(y_test, axis=1)
-
-    print(f"Confusion matrix of keras model :")
-    print(confusion_matrix(expected_values_on_test, predicted_values_on_test))
-
-    print(f"----------------------------------------------------------------")
+    # model = keras.models.Sequential()
+    # model.add(keras.layers.Dense(16, activation=keras.activations.tanh))
+    # model.add(keras.layers.Dense(3, activation=keras.activations.tanh))
+    # model.compile(keras.optimizers.SGD(alpha), loss=keras.losses.mean_squared_error)
+    #
+    # start_time = time.time()
+    #
+    # model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=1, verbose=0)
+    #
+    # print(f'It took {time.time() - start_time} seconds to train in Keras')
+    #
+    # good_classified_on_train = 0
+    # for k in range(len(x_train)):
+    #     if np.argmax(model.predict(np.array([x_train[k]]))) == np.argmax(y_train[k]):
+    #         good_classified_on_train += 1
+    #
+    # good_classified_on_test = 0
+    # for k in range(len(x_test)):
+    #     if np.argmax(model.predict(np.array([x_test[k]]))) == np.argmax(y_test[k]):
+    #         good_classified_on_test += 1
+    #
+    # print(f"Keras Accuracy on train : {good_classified_on_train / len(x_train) * 100}%")
+    # print(f"Keras Accuracy on test : {good_classified_on_test / len(x_test) * 100}%")
+    #
+    # predicted_values_on_test = model.predict(x_test)
+    # predicted_values_on_test = np.argmax(predicted_values_on_test, axis=1)
+    #
+    # expected_values_on_test = np.argmax(y_test, axis=1)
+    #
+    # print(f"Confusion matrix of keras model :")
+    # print(confusion_matrix(expected_values_on_test, predicted_values_on_test))
+    #
+    # print(f"----------------------------------------------------------------")
 
     # Test MyLib Model
     cpp_lib.mlp_model_create.argtypes = [
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     flattened_y_train = np.reshape(y_train, (len(y_train) * len(y_train[0])))
 
     start_time = time.time()
-
+    print(alpha)
     cpp_lib.mlp_model_train_classification(my_model,
                                            flattened_x_train.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
                                            len(x_train),
