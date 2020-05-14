@@ -105,6 +105,28 @@ public class TestScript : MonoBehaviour
         }
     }
 
+    void ClassificationPredictForXOR(IntPtr model)
+    {
+        Debug.Log("Predict Model");
+
+        foreach (var testSpheresTransform in testSpheresTransforms)
+        {
+            double[] inputs = new double[2];
+            inputs[0] = testSpheresTransform.position.x * testSpheresTransform.position.z;
+            inputs[1] = testSpheresTransform.position.z * testSpheresTransform.position.x;
+
+            double result = VisualStudioLibWrapper.linear_model_predict_classification(model, inputs, inputs.Length);
+
+            testSpheresTransform.position = new Vector3(
+                testSpheresTransform.position.x,
+                (float)result,
+                testSpheresTransform.position.z
+            );
+
+            Debug.Log("Result Predict Model =  " + result);
+        }
+    }
+
     void ClassificationTrain(IntPtr model)
     {
         Debug.Log("Train Model");
@@ -117,6 +139,23 @@ public class TestScript : MonoBehaviour
             inputs.Add(trainSpheresTransform.position.z);
 
             expecteds.Add(trainSpheresTransform.position.y >= 0 ? 1.0 : -1.0 );
+        }
+
+        VisualStudioLibWrapper.linear_model_train_classification(model, inputs.ToArray(), inputs.Count() / 2, 2, expecteds.ToArray(), iterationCount, alpha);
+    }
+
+    void ClassificationTrainForXOR(IntPtr model)
+    {
+        Debug.Log("Train Model");
+        List<double> inputs = new List<double>();
+        List<double> expecteds = new List<double>();
+
+        foreach (var trainSpheresTransform in trainSpheresTransforms)
+        {
+            inputs.Add(trainSpheresTransform.position.x * trainSpheresTransform.position.z);
+            inputs.Add(trainSpheresTransform.position.z * trainSpheresTransform.position.x);
+
+            expecteds.Add(trainSpheresTransform.position.y >= 0 ? 1.0 : -1.0);
         }
 
         VisualStudioLibWrapper.linear_model_train_classification(model, inputs.ToArray(), inputs.Count() / 2, 2, expecteds.ToArray(), iterationCount, alpha);
@@ -157,6 +196,22 @@ public class TestScript : MonoBehaviour
         ClassificationTrain(model);
 
         ClassificationPredict(model);
+
+        //Delete
+        Delete(model);
+    }
+
+    public void LaunchClassificationForXOR()
+    {
+        Debug.Log("Classification XOR : Training and Testing");
+
+        // Create Model
+        var model = CreateModel(2);
+
+        // Train Model
+        ClassificationTrainForXOR(model);
+
+        ClassificationPredictForXOR(model);
 
         //Delete
         Delete(model);

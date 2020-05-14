@@ -7498,6 +7498,8 @@ MonoBehaviour:
   - {fileID: 731637132}
   - {fileID: 352374056}
   - {fileID: 349387150}
+  alpha: 0.001
+  iterationCount: 1000000
 --- !u!1 &968163874
 GameObject:
   m_ObjectHideFlags: 0

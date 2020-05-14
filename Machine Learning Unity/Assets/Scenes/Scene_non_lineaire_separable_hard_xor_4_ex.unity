@@ -10672,7 +10672,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 963194229}
-        m_MethodName: LaunchClassification
+        m_MethodName: LaunchClassificationForXOR
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
