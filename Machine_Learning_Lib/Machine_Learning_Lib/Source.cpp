@@ -88,18 +88,71 @@ extern "C"
 		delete model;
 	}
 
+	// faire un new de ce truc 
 	struct MLP {
-		int* npl;
-		int npl_size;
-		double*** w;
-		double** x;
-		double** deltas;
+		int* npl; 
+		int npl_size; 
+		double*** w;// valeur des poids [0] =layer (l), [1] = i, [2] = j 
+		double** x; // enregistrement des valeurs x résultant de la propagation 
+		double** deltas; //  les deltas a stocker dans l'apprentissage 
 	};
 
-	// mlp_model_create([2, 3, 4, 1], 4);
+	// mlp_model_create([2, 3, 4, 1], 4); // a récupérer avec un IntPtr
 	DLLEXPORT struct MLP* mlp_model_create(int* npl, int npl_size)
-	{
-		// TODO
-		return 0;
+	{ 
+
+
+		// npl tableau d'entier ( neurone per layer )
+		// [2, 3, 4, 1]
+		// 2 =>  Deux entrée
+		// 3, 4 => deux couches cachée avec respectivement 3 et 4 neurones sans compter le neurone fictive 1
+		// 1 => une sortie 
+
+		// np)l_size = la taille du tableau
+
+
+		// Création de la structure mlp pour sauvegarder tout ce dont on a besoin 
+
+
+
+		// Nombre d'entrée + 1 pour l'entrée fictive
+		/* Seule chose qui change entre le mlp de classification pour la régression et pour la classification c
+		*/
+
+		/*
+			w[l][i][j]
+			l => layer neurone arrive /-> taille nb layer
+			i => position i neurone départ /-> taille nb neurones
+			j => position j neurone arrive /-> taille nb neurones
+		*/
+		double*** w_ptr = new double** [npl_size];
+		for (int layer = 1; layer < npl_size; ++layer) {
+			w_ptr[layer] = new double* [npl[layer -1] + 1]; // nombre de neurone du layer l + neurone fictif
+			
+			for (int neurone_i = 0; neurone_i < npl[layer -1 ] + 1; ++neurone_i) {
+				w_ptr[layer][neurone_i] = new double[npl[layer] + 1]; // nombre de neurone du layer l + neurone fictif
+
+				for (int neurone_j = 0; neurone_j < npl[layer] + 1; ++neurone_j) {
+					w_ptr[layer][neurone_i][neurone_j] = ((double) rand()) / RAND_MAX * 2.0 - 1.0;
+				}
+			}
+		}
+
+
+		double** x_ptr = new double* [npl_size]; // x[L][J]
+		double** deltas_ptr = new double* [npl_size];
+		for (auto l = 0; l < npl_size; l++) {
+			//model->x[l] = new double[npl[l] + 1];
+		}
+
+		MLP* model = new MLP;
+
+		model->npl = npl;
+		model->npl_size = npl_size;
+		model->w = w_ptr;
+		model->x = x_ptr;
+		model->deltas = deltas_ptr;
+
+		return model;
 	}
 }
