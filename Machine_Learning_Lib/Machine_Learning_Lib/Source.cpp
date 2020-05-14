@@ -38,7 +38,7 @@ extern "C"
 
 				auto sum = 0.0;
 
-				for (auto i = 0; i < model->npl[l - 1] + 1) {
+				for (auto i = 0; i < model->npl[l - 1] + 1; i++) {
 					sum += model->w[l][i][j] * model->x[l - 1][i];
 				}
 
@@ -201,7 +201,7 @@ extern "C"
 
 		for (auto it = 0; it < interations_count; it++)
 		{
-			auto k = floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length);
+			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length));
 			auto inputs = dataset_inputs + k * inputs_size;
 			auto expected_outputs = dataset_expected_outputs + k * outputs_size;
 
@@ -244,7 +244,7 @@ extern "C"
 	{
 		for (auto it = 0; it < interations_count; it++)
 		{
-			auto k = floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length);
+			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length));
 			auto inputs = dataset_inputs + k * inputs_size;
 			auto expected_outputs = dataset_expected_outputs + k * outputs_size;
 
