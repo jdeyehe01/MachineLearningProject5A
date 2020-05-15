@@ -26,7 +26,7 @@ public class TestScript : MonoBehaviour
         
     }
 
-    System.IntPtr CreateModel(int size)
+    IntPtr CreateModel(int size)
     {
         Debug.Log("Create Model");
         var modelPtr = VisualStudioLibWrapper.linear_model_create(size);
@@ -215,5 +215,36 @@ public class TestScript : MonoBehaviour
 
         //Delete
         Delete(model);
+    }
+
+
+    /* MLP */
+
+    IntPtr CreateModelMLP(int size)
+    {
+        Debug.Log("Create Model");
+        //var modelPtr = VisualStudioLibWrapper.mlp_model_create(size);
+        /*double[] model = new double[size+1];
+        Marshal.Copy(modelPtr, model, 0, size + 1);
+        Debug.Log(model[size]);*/
+
+        //return modelPtr;
+        return new IntPtr();
+    }
+
+    public void LaunchClassificationMLP()
+    {
+        Debug.Log("Classification MLP : Training and Testing");
+
+        // Create Model
+        //var model = CreateModel(2);
+
+        // Train Model
+        //ClassificationTrain(model);
+
+        //ClassificationPredict(model);
+
+        //Delete
+        //Delete(model);
     }
 }

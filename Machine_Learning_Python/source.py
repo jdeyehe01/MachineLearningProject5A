@@ -136,6 +136,9 @@ if __name__ == "__main__":
                                                        ctypes.c_double]
     cpp_lib.mlp_model_train_classification.restype = None
 
+    cpp_lib.mlp_model_delete.argtypes = [ctypes.c_void_p]
+    cpp_lib.mlp_model_delete.restype = None
+
     npl = np.array([len(x_train[0]), 16, len(y_train[0])])
     my_model = cpp_lib.mlp_model_create(npl.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), len(npl))
     flattened_x_train = np.reshape(x_train, (len(x_train) * len(x_train[0])))
@@ -182,6 +185,8 @@ if __name__ == "__main__":
         predicted_values_on_test[k] = np.argmax(rslt)
         if np.argmax(rslt) == np.argmax(y_test[k]):
             good_classified_on_test += 1
+
+    cpp_lib.mlp_model_delete(my_model)
 
     print(f"MyModel Accuracy on train : {good_classified_on_train / len(x_train) * 100}%")
     print(f"MyModel Accuracy on test : {good_classified_on_test / len(x_test) * 100}%")

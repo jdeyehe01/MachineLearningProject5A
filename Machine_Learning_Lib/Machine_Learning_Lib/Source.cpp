@@ -132,7 +132,7 @@ extern "C"
 
 	DLLEXPORT void linear_model_delete(double* model)
 	{
-		delete model;
+		delete[] model;
 	}
 
 
@@ -280,5 +280,10 @@ extern "C"
 
 		}
 
+	}
+
+	DLLEXPORT void mlp_model_delete(double* model)
+	{
+		delete[] model;
 	}
 }
