@@ -37,7 +37,7 @@ extern "C"
 
 				auto sum = 0.0;
 
-				for (auto i = 1; i < model->npl[l - 1] + 1; i++) {
+				for (auto i = 0; i < model->npl[l - 1] + 1; i++) {
 					sum += model->w[l][i][j] * model->x[l - 1][i];
 				}
 
@@ -146,7 +146,7 @@ extern "C"
 		model->npl = new int[npl_size];
 
 		for (auto i = 0; i < npl_size; i++) {
-			model->npl[i] = npl_size;
+			model->npl[i] = npl[i];
 		}
 		model->npl_size = npl_size;
 
@@ -200,51 +200,7 @@ extern "C"
 
 		for (auto it = 0; it < interations_count; it++)
 		{
-			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length));
-			auto inputs = dataset_inputs + k * inputs_size;
-			auto expected_outputs = dataset_expected_outputs + k * outputs_size;
-
-			mlp_propagation(model, inputs, true);
-
-			for (auto j = 1; j < model->npl[model->npl_size - 1] + 1; j++) {
-				model->deltas[model->npl_size - 1][j] = (1 - pow(model->x[model->npl_size - 1][j], 2)) * (model->x[model->npl_size - 1][j] - expected_outputs[j - 1]);
-			}
-
-
-			for (auto l = model->npl_size - 1; l >= 2; l--)
-			{
-				for (auto i = 1; i < model->npl[l - 1] + 1; i++) {
-					auto sum = 0.0;
-					for (auto j = 1; j < model->npl[l] + 1; j++)
-					{
-						sum += model->w[l][i][j] * model->deltas[l][j];
-					}
-					model->deltas[l - 1][i] = (1 - pow(model->x[l - 1][i], 2)) * sum;
-				}
-			}
-
-			for (auto l = 1; l < model->npl_size; l++)
-			{
-				for (auto i = 1; i < model->npl[l] + 1; i++)
-				{
-					for (auto j = 1; j < model->npl[l] + 1; j++)
-					{
-						model->w[l][i][j] -= alpha * model->x[l - 1][i] * model->deltas[l][j];
-					}
-				}
-			}
-
-		}
-		
-	}
-
-
-	DLLEXPORT void mlp_model_train_regression(struct MLP* model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs,
-		int outputs_size, int interations_count, double alpha)
-	{
-		for (auto it = 0; it < interations_count; it++)
-		{
-			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1) / RAND_MAX * dataset_length));
+			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1)) / RAND_MAX * dataset_length);
 			auto inputs = dataset_inputs + k * inputs_size;
 			auto expected_outputs = dataset_expected_outputs + k * outputs_size;
 
@@ -269,7 +225,51 @@ extern "C"
 
 			for (auto l = 1; l < model->npl_size; l++)
 			{
-				for (auto i = 0; i < model->npl[l] + 1; i++)
+				for (auto i = 0; i < model->npl[l - 1] + 1; i++)
+				{
+					for (auto j = 1; j < model->npl[l] + 1; j++)
+					{
+						model->w[l][i][j] -= alpha * model->x[l - 1][i] * model->deltas[l][j];
+					}
+				}
+			}
+
+		}
+		
+	}
+
+
+	DLLEXPORT void mlp_model_train_regression(struct MLP* model, double* dataset_inputs, int dataset_length, int inputs_size, double* dataset_expected_outputs,
+		int outputs_size, int interations_count, double alpha)
+	{
+		for (auto it = 0; it < interations_count; it++)
+		{
+			auto k = (int)floor(((double)std::min(rand(), RAND_MAX - 1)) / RAND_MAX * dataset_length);
+			auto inputs = dataset_inputs + k * inputs_size;
+			auto expected_outputs = dataset_expected_outputs + k * outputs_size;
+
+			mlp_propagation(model, inputs, true);
+
+			for (auto j = 1; j < model->npl[model->npl_size - 1] + 1; j++) {
+				model->deltas[model->npl_size - 1][j] = (1 - pow(model->x[model->npl_size - 1][j], 2)) * (model->x[model->npl_size - 1][j] - expected_outputs[j - 1]);
+			}
+
+
+			for (auto l = model->npl_size - 1; l >= 2; l--)
+			{
+				for (auto i = 1; i < model->npl[l - 1] + 1; i++) {
+					auto sum = 0.0;
+					for (auto j = 1; j < model->npl[l] + 1; j++)
+					{
+						sum += model->w[l][i][j] * model->deltas[l][j];
+					}
+					model->deltas[l - 1][i] = (1 - pow(model->x[l - 1][i], 2)) * sum;
+				}
+			}
+
+			for (auto l = 1; l < model->npl_size; l++)
+			{
+				for (auto i = 0; i < model->npl[l - 1] + 1; i++)
 				{
 					for (auto j = 1; j < model->npl[l] + 1; j++)
 					{
