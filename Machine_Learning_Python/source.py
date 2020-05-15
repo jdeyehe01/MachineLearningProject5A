@@ -44,6 +44,95 @@ def load_iris_dataset():
 
     return (x_train, y_train), (x_test, y_test)
 
+def load_phishing_dataset():
+    lines = []
+    with open('PhishingData.arff') as data_file:
+        reader = csv.reader(data_file)
+        for line in reader:
+            if len(line) == 0:
+                continue
+            lines.append(line)
+    dataset_inputs = np.zeros((len(lines), 9))
+    dataset_expected_outputs = np.zeros((len(lines), 3))
+    for i, line in enumerate(lines):
+        dataset_inputs[i] = np.array([float(col) for col in line[:9]])
+        if line[9] == 1:
+            dataset_expected_outputs[i] = np.array([1, -1, -1])
+        elif line[9] == 0:
+            dataset_expected_outputs[i] = np.array([-1, 1, -1])
+        else:
+            dataset_expected_outputs[i] = np.array([-1, -1, 1])
+    print(dataset_inputs.shape)
+    print(dataset_expected_outputs.shape)
+    split_indexes = np.arange(len(dataset_inputs))
+    np.random.shuffle(split_indexes)
+    train_size = int(np.floor(len(dataset_inputs) * 0.3))
+    x_train = dataset_inputs[split_indexes][:train_size]
+    x_test = dataset_inputs[split_indexes][train_size:]
+    y_train = dataset_expected_outputs[split_indexes][:train_size]
+    y_test = dataset_expected_outputs[split_indexes][train_size:]
+
+    return (x_train, y_train), (x_test, y_test)
+
+def load_vertebral_dataset1():
+    lines = []
+    with open('column_3C_weka.arff') as data_file:
+        reader = csv.reader(data_file)
+        for line in reader:
+            if len(line) == 0:
+                continue
+            lines.append(line)
+    dataset_inputs = np.zeros((len(lines), 6))
+    dataset_expected_outputs = np.zeros((len(lines), 3))
+    for i, line in enumerate(lines):
+        dataset_inputs[i] = np.array([float(col) for col in line[:6]])
+        if line[6] == "Hernia":
+            dataset_expected_outputs[i] = np.array([1, -1, -1])
+        elif line[6] == "Spondylolisthesis":
+            dataset_expected_outputs[i] = np.array([-1, 1, -1])
+        else:
+            dataset_expected_outputs[i] = np.array([-1, -1, 1])
+    print(dataset_inputs.shape)
+    print(dataset_expected_outputs.shape)
+    split_indexes = np.arange(len(dataset_inputs))
+    np.random.shuffle(split_indexes)
+    train_size = int(np.floor(len(dataset_inputs) * 0.7))
+    x_train = dataset_inputs[split_indexes][:train_size]
+    x_test = dataset_inputs[split_indexes][train_size:]
+    y_train = dataset_expected_outputs[split_indexes][:train_size]
+    y_test = dataset_expected_outputs[split_indexes][train_size:]
+
+    return (x_train, y_train), (x_test, y_test)
+
+def load_vertebral_dataset2():
+    lines = []
+    with open('column_3C.dat') as data_file:
+        reader = csv.reader(data_file, delimiter=' ')
+        for line in reader:
+            if len(line) == 0:
+                continue
+            lines.append(line)
+    dataset_inputs = np.zeros((len(lines), 6))
+    dataset_expected_outputs = np.zeros((len(lines), 3))
+    for i, line in enumerate(lines):
+        dataset_inputs[i] = np.array([float(col) for col in line[:6]])
+        if line[6] == "DH":
+            dataset_expected_outputs[i] = np.array([1, -1, -1])
+        elif line[6] == "SL":
+            dataset_expected_outputs[i] = np.array([-1, 1, -1])
+        else:
+            dataset_expected_outputs[i] = np.array([-1, -1, 1])
+    print(dataset_inputs.shape)
+    print(dataset_expected_outputs.shape)
+    split_indexes = np.arange(len(dataset_inputs))
+    np.random.shuffle(split_indexes)
+    train_size = int(np.floor(len(dataset_inputs) * 0.7))
+    x_train = dataset_inputs[split_indexes][:train_size]
+    x_test = dataset_inputs[split_indexes][train_size:]
+    y_train = dataset_expected_outputs[split_indexes][:train_size]
+    y_test = dataset_expected_outputs[split_indexes][train_size:]
+
+    return (x_train, y_train), (x_test, y_test)
 
 if __name__ == "__main__":
     path_to_dll = "./Machine_Learning_Lib.dll"
@@ -75,10 +164,12 @@ if __name__ == "__main__":
     plt.scatter(inputs, predicted_values)
     #plt.show()
 
-    (x_train, y_train), (x_test, y_test) = load_iris_dataset()
+    #(x_train, y_train), (x_test, y_test) = load_iris_dataset()
+    #(x_train, y_train), (x_test, y_test) = load_phishing_dataset()
+    (x_train, y_train), (x_test, y_test) = load_vertebral_dataset2()
 
-    epochs = 500
-    alpha = 0.01
+    epochs = 100
+    alpha = 0.001
 
     # Test Keras Model
     model = keras.models.Sequential()
